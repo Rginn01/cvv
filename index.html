@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificação de Cartão</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/6c4707bd5b.js" crossorigin="anonymous"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #1b1033 40%, #f5f5f5 60%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      max-width: 1200px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .card {
+      width: 340px;
+      height: 200px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #2d1f55, #5a47a5);
+      color: white;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      animation: fadeIn 1s ease;
+    }
+
+    .card .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card .top .logo {
+      font-size: 24px;
+    }
+
+    .card .chip {
+      width: 50px;
+      height: 35px;
+      background: linear-gradient(45deg, #ddd, #999);
+      border-radius: 6px;
+    }
+
+    .card .number {
+      font-size: 20px;
+      letter-spacing: 2px;
+      margin: 20px 0 10px;
+      transition: 0.3s;
+    }
+
+    .card .number.glow {
+      animation: glowNumber 0.4s ease;
+    }
+
+    @keyframes glowNumber {
+      0% { color: #fff; text-shadow: 0 0 10px #fff; }
+      100% { color: #ddd; text-shadow: none; }
+    }
+
+    .card .bottom {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    .card-back {
+      background: linear-gradient(135deg, #222, #444);
+      color: white;
+      padding: 20px;
+      border-radius: 20px;
+      width: 340px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      font-weight: bold;
+      font-family: monospace;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      animation: fadeIn 1.5s ease;
+    }
+
+    .cvv-box {
+      background-color: #eee;
+      color: #000;
+      padding: 8px 14px;
+      border-radius: 6px;
+      box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+    }
+
+    .formulario {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      animation: fadeIn 2s ease;
+    }
+
+    .formulario h2 {
+      margin-bottom: 20px;
+      font-size: 20px;
+      color: #111;
+      text-align: center;
+    }
+
+    .formulario h2 span {
+      background: #cfd5f3;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #44307a;
+      outline: none;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row input {
+      flex: 1;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background-color: #44307a;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #35225e;
+    }
+
+    .verificacao {
+      font-size: 12px;
+      margin-top: 10px;
+      color: gray;
+      text-align: center;
+    }
+
+    .mensagem-dialogo {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      animation: fadeIn 0.6s ease;
+      max-width: 300px;
+      z-index: 9999;
+    }
+
+    .mensagem-dialogo i {
+      margin-right: 10px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 850px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .card, .card-back, .formulario {
+        width: 100%;
+        max-width: 350px;
+      }
+
+      body {
+        background: linear-gradient(to bottom, #1b1033 50%, #f5f5f5 50%);
+      }
+
+      .mensagem-dialogo {
+        bottom: 20px;
+        right: 50%;
+        transform: translateX(50%);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Cartões -->
+    <div class="cards">
+      <div class="card">
+        <div class="top">
+          <div class="logo"><i class="fas fa-university"></i> Banco</div>
+          <div class="chip"></div>
+        </div>
+        <div class="number" id="cardNumber"><i class="fas fa-credit-card"></i> 0000 0000 0000 0000</div>
+        <div class="bottom">
+          <div class="name" id="cardName">NOME NO CARTÃO</div>
+          <div class="valid" id="cardDate">Válido até 12/29</div>
+        </div>
+      </div>
+      <div class="card-back">
+        CVV: <span class="cvv-box" id="cvvBox">000</span>
+      </div>
+    </div>
+
+    <!-- Formulário -->
+    <div class="formulario">
+      <h2>Veja se seu cartão <span>vazou</span> na internet</h2>
+
+      <label for="nome">Nome no cartão</label>
+      <input type="text" id="nome" placeholder="Ex: João da Silva" oninput="atualizarNome(this)">
+
+      <label for="numero">Número do cartão</label>
+      <input type="text" id="numero" maxlength="19" placeholder="0000 0000 0000 0000" oninput="formatarNumeroCartao(this)">
+
+      <div class="row">
+        <div>
+          <label for="exp">Data de expiração</label>
+          <input type="text" id="exp" maxlength="5" placeholder="MM/AA" oninput="formatarData(this)">
+        </div>
+        <div>
+          <label for="cvv">CVV</label>
+          <input type="text" id="cvv" maxlength="3" placeholder="123" oninput="formatarCVV(this)">
+        </div>
+      </div>
+
+      <label for="senha">Senha do cartão</label>
+      <input type="password" id="senha" placeholder="******">
+
+      <button onclick="mostrarMensagem()">Verificar</button>
+      <div class="verificacao"><i class="fas fa-shield-alt"></i> É verdadeiro este site</div>
+    </div>
+  </div>
+
+  <!-- Diálogo -->
+  <div class="mensagem-dialogo" id="mensagemDialogo">
+    <i class="fas fa-check-circle"></i>
+    Seu cartão <strong>não foi vazado</strong> na internet.
+  </div>
+
+  <script>
+    function formatarNumeroCartao(input) {
+      let valor = input.value.replace(/\D/g, '').substring(0, 16);
+      let formatado = valor.replace(/(\d{4})(?=\d)/g, '$1 ');
+      input.value = formatado.trim();
+
+      const cardDisplay = document.getElementById('cardNumber');
+      cardDisplay.innerHTML = '<i class="fas fa-credit-card"></i> ' + (formatado || '0000 0000 0000 0000');
+      cardDisplay.classList.add('glow');
+      setTimeout(() => cardDisplay.classList.remove('glow'), 300);
+    }
+
+    function formatarData(input) {
+      let valor = input.value.replace(/\D/g, '').substring(0, 4);
+      if (valor.length >= 3) {
+        input.value = valor.replace(/(\d{2})(\d{1,2})/, '$1/$2');
+      } else {
+        input.value = valor;
+      }
+
+      const cardDate = document.getElementById("cardDate");
+      cardDate.textContent = input.value ? `Válido até ${input.value}` : "Válido até 12/29";
+    }
+
+    function formatarCVV(input) {
+      input.value = input.value.replace(/\D/g, '').substring(0, 3);
+      document.getElementById('cvvBox').textContent = input.value || '000';
+    }
+
+    function atualizarNome(input) {
+      input.value = input.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
+      const nameDisplay = document.getElementById("cardName");
+      nameDisplay.textContent = input.value || "NOME NO CARTÃO";
+    }
+
+    function mostrarMensagem() {
+      const dialogo = document.getElementById("mensagemDialogo");
+      dialogo.style.display = "block";
+      setTimeout(() => {
+        dialogo.style.display = "none";
+      }, 5000);
+    }
+  </script>
+
+</body>
+</html>

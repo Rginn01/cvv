@@ -1,386 +1,1000 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR" data-theme="retro">
 <head>
-  <meta charset="UTF-8">
-  <title>Verificação de Cartão</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://kit.fontawesome.com/6c4707bd5b.js" crossorigin="anonymous"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RetroPlay — Clássicos Remasterizados</title>
+  <meta name="description" content="Reviva Pac-Man, Tetris, Space Invaders e outros clássicos — remasterizados para web." />
+  <meta name="theme-color" content="#0f380f" />
+  <meta name="color-scheme" content="dark light" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+  <!-- (opcional futuramente) Manifest / icons
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="icon" href="icon.png">
+  -->
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* ========= PARTE 1/5 — Tokens, Reset, Layout base, Header e Grid (início) ========= */
+
+    /* ===== Tokens de tema ===== */
+    :root{
+      /* Tipos */
+      --ff-display:'Press Start 2P',system-ui,sans-serif;
+      --ff-body:'VT323',ui-monospace,monospace;
+
+      /* Retro */
+      --retro-bg:#0f380f; --retro-card:#306230; --retro-accent:#8bac0f; --retro-text:#f8f8f8; --retro-shadow:#0f0f0f;
+
+      /* Neon */
+      --neon-bg:#0b1020; --neon-card:#121a30; --neon-accent:#67f2ff; --neon-text:#e6f1ff; --neon-shadow:#0a0f24;
+
+      /* Noir (alto contraste, sutilmente “filme”) */
+      --noir-bg:#0b0b0c; --noir-card:#171719; --noir-accent:#d0d0d0; --noir-text:#f2f2f2; --noir-shadow:#000;
+
+      /* Geometria & efeitos */
+      --radius:16px;
+      --shadow-offset:10px;
+      --ring:3px dashed;
+      --focus:#ffd24d; /* muda por tema via [data-theme] */
+      --shadow-color:#000; /* idem */
+      --crt-opacity:0; /* 0 → desligado */
+      --blur-bg: saturate(120%) blur(0px); /* ajustado por tema */
+      --card-grad-top: transparent; /* ajustado por tema */
+
+      /* Cores “ativas” (inicial: retro) */
+      --bg:var(--retro-bg);
+      --card:var(--retro-card);
+      --text:var(--retro-text);
+      --accent:var(--retro-accent);
+      --shadow-color:var(--retro-shadow);
     }
 
-    body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(to right, #1b1033 40%, #f5f5f5 60%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+    /* Tema: Neon */
+    html[data-theme="neon"]{
+      --bg:var(--neon-bg);
+      --card:var(--neon-card);
+      --text:var(--neon-text);
+      --accent:var(--neon-accent);
+      --shadow-color:var(--neon-shadow);
+      --focus:#9bf6ff;
+      --blur-bg:saturate(130%) blur(1px);
+      --card-grad-top: color-mix(in oklab, var(--accent) 10%, transparent);
     }
 
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 40px;
-      max-width: 1200px;
-      width: 100%;
-      justify-content: center;
-      perspective: 1000px;
+    /* Tema: Noir */
+    html[data-theme="noir"]{
+      --bg:var(--noir-bg);
+      --card:var(--noir-card);
+      --text:var(--noir-text);
+      --accent:var(--noir-accent);
+      --shadow-color:var(--noir-shadow);
+      --focus:#e5e5e5;
+      --blur-bg:saturate(100%) blur(0.5px);
+      --card-grad-top: color-mix(in oklab, var(--accent) 6%, transparent);
     }
 
-    .cards {
-      width: 340px;
-      height: 200px;
+    /* ===== Reset & base ===== */
+    *,*::before,*::after{box-sizing:border-box}
+    :where(html,body){height:100%}
+    :where(body){
+      margin:0;
+      font-family:var(--ff-body);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(255,255,255,.05), transparent 60%),
+        radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,.06), transparent 65%),
+        var(--bg);
+      min-height:100svh;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      padding:clamp(8px,1.2vw,16px);
+    }
+
+    /* Links de “pular para conteúdo” (a11y) */
+    .skip-link{
+      position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;
+    }
+    .skip-link:focus{
+      position:fixed; left:16px; top:16px; width:auto; height:auto;
+      padding:10px 14px; background:var(--card); color:var(--text);
+      outline:var(--ring) var(--focus); border-radius:12px; z-index:1000;
+    }
+
+    /* ===== Header ===== */
+    .site-header{
+      text-align:center;
+      margin-bottom:clamp(8px,2.5vw,22px);
+      animation:fade-in .6s ease both;
+    }
+    .brand{
+      display:inline-flex; align-items:center; gap:12px;
+      padding:6px 10px;
+      background: color-mix(in oklab, var(--card) 85%, black 15%);
+      border:2px solid color-mix(in oklab, var(--accent) 55%, black 45%);
+      border-radius:14px;
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--shadow-color);
+    }
+    .logo{font-size:clamp(24px,3.5vw,40px)}
+    .title{
+      margin:0;
+      font-family:var(--ff-display);
+      font-size:clamp(22px,3.8vw,42px);
+      color:var(--accent);
+      text-shadow:3px 3px var(--shadow-color);
+      letter-spacing:.5px;
+    }
+    .tagline{
+      margin:10px 0 14px;
+      font-size:clamp(16px,2.6vw,22px);
+      opacity:.9;
+    }
+
+    /* ===== Toolbar (busca + toggles) ===== */
+    .toolbar{
+      display:flex; flex-wrap:wrap; gap:12px; justify-content:center; align-items:center;
+    }
+    .search{
+      display:flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      background: color-mix(in oklab, var(--card) 88%, black 12%);
+      border:2px solid color-mix(in oklab, var(--accent) 50%, black 50%);
+      border-radius:12px;
+      box-shadow: 6px 6px 0 var(--shadow-color);
+      backdrop-filter: var(--blur-bg);
+    }
+    .search input{
+      font:inherit; font-size:clamp(16px,2.2vw,20px); border:0; outline:none; background:transparent; color:var(--text);
+      min-width:min(50vw,360px);
+    }
+    .toggles{display:inline-flex; gap:10px; align-items:center}
+
+    .btn, .switch{user-select:none; cursor:pointer}
+    .btn{
+      font:inherit; font-weight:700; color:var(--text);
+      background: linear-gradient(180deg, color-mix(in oklab, var(--card) 92%, black 8%), color-mix(in oklab, var(--card) 78%, black 22%));
+      border:2px solid color-mix(in oklab, var(--accent) 60%, black 40%);
+      padding:8px 12px; border-radius:12px;
+      box-shadow: 6px 6px 0 var(--shadow-color);
+      transition: transform .12s ease, box-shadow .12s ease, border-color .2s ease;
+    }
+    .btn:hover{ transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--shadow-color); }
+    .btn:active{ transform: translate(1px,1px); box-shadow: 3px 3px 0 var(--shadow-color); }
+    .btn:focus-visible{ outline:var(--ring) var(--focus); outline-offset:4px; }
+
+    .switch{
+      display:inline-flex; gap:8px; align-items:center;
+      background: color-mix(in oklab, var(--card) 92%, black 8%);
+      border:2px solid color-mix(in oklab, var(--accent) 55%, black 45%);
+      padding:6px 10px; border-radius:999px;
+      box-shadow:6px 6px 0 var(--shadow-color);
+    }
+    .switch input{ accent-color:var(--accent); }
+
+    /* ===== Conteúdo base ===== */
+    .content{ width:min(1200px,100%); margin:0 auto; }
+
+    /* ===== Grid de cards (início) ===== */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(clamp(180px, 30vw, 260px), 1fr));
+      gap:clamp(12px, 2vw, 20px);
+      padding:clamp(6px,1.2vw,12px);
+    }
+
+    .card{
+      position:relative;
+      display:grid; grid-template-rows:auto 1fr; gap:8px;
+      text-decoration:none; color:var(--text);
+      background:
+        linear-gradient(180deg, var(--card-grad-top), transparent 30%),
+        linear-gradient(180deg, color-mix(in oklab, var(--card) 92%, black 8%), color-mix(in oklab, var(--card) 78%, black 22%));
+      border:2px solid color-mix(in oklab, var(--accent) 50%, black 50%);
+      border-radius:var(--radius);
+      padding:clamp(12px,2.2vw,18px);
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--shadow-color);
+      transform: translateZ(0);
+      transition: transform .16s ease, box-shadow .16s ease, border-color .22s ease, background .22s ease;
+      will-change: transform, box-shadow;
+      overflow:hidden;
+    }
+    .card::after{ /* brilho sutil ao hover */
+      content:"";
+      position:absolute; inset:auto -20% 0 -20%; height:45%;
+      background: radial-gradient(60% 80% at 50% 100%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 60%);
+      opacity:.0; pointer-events:none; transition:opacity .25s ease;
+    }
+    .card:hover{
+      transform: translate(-4px, -4px) rotateZ(-0.2deg);
+      box-shadow: calc(var(--shadow-offset) + 4px) calc(var(--shadow-offset) + 4px) 0 var(--shadow-color);
+    }
+    .card:hover::after{ opacity:.35; }
+    .card:active{
+      transform: translate(-1px, -1px);
+      box-shadow: calc(var(--shadow-offset) / 2) calc(var(--shadow-offset) / 2) 0 var(--shadow-color);
+    }
+    .card:focus-visible{ outline:var(--ring) var(--focus); outline-offset:4px; }
+
+    .card h2{
+      font-family:var(--ff-display);
+      font-size:clamp(16px,2.6vw,20px);
+      margin:0 0 4px;
+      color:var(--accent);
+      text-shadow:2px 2px var(--shadow-color);
+      letter-spacing:.4px;
+    }
+    .card p{ margin:0; font-size:clamp(15px,2.2vw,18px); opacity:.95; line-height:1.15; }
+
+        /* ===== Capas 8-bit (CSS puro) ===== */
+    .cover{
+      width:100%;
+      aspect-ratio: 4 / 3;
+      border-radius:8px;
+      background-color:var(--accent);
+      margin-bottom:8px;
+      box-shadow: inset 0 0 0 2px var(--shadow-color);
+      image-rendering: pixelated;
+      position:relative;
+      overflow:hidden;
+    }
+
+        /* ===== Capas 8-bit — animações opcionais ===== */
+    .card .cover{
+      transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+      will-change: transform, box-shadow, filter;
+      /* máscara leve de scanlines dentro da capa */
       position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.8s ease;
+    }
+    /* “levantar” a capa no hover do card */
+    .card:hover .cover{
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: inset 0 0 0 2px var(--shadow-color), 0 6px 0 var(--shadow-color);
+      filter: saturate(120%);
     }
 
-    .cards.virar {
-      transform: rotateY(180deg);
+    /* varredura vertical (sweep) suave dentro da capa */
+    .card .cover::after{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,0) 0%,
+          rgba(255,255,255,.16) 12%,
+          rgba(255,255,255,0) 24%
+        );
+      mix-blend-mode:soft-light;
+      opacity:0; /* só aparece no hover para não poluir */
+      pointer-events:none;
+    }
+    .card:hover .cover::after{
+      opacity:.8;
+      animation: cover-sweep 1.6s ease-in-out both;
     }
 
-    .card, .card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 20px;
-      backface-visibility: hidden;
+    /* brilho/“sparkles” bem discretos no topo da capa */
+    .card .cover::before{
+      content:"";
+      position:absolute; left:0; right:0; top:0; height:34%;
+      background:
+        radial-gradient(40px 12px at 20% 30%, rgba(255,255,255,.25), transparent 70%),
+        radial-gradient(30px 10px at 70% 20%, rgba(255,255,255,.18), transparent 70%);
+      mix-blend-mode:screen;
+      opacity:.0;
+      pointer-events:none;
+      transition:opacity .25s ease;
+    }
+    .card:hover .cover::before{ opacity:.35; }
+
+    /* variações com micro-movimento sutil por tipo */
+    .card:hover .cover.pac   { transform: translateY(-2px) scale(1.02) rotate(-0.2deg); }
+    .card:hover .cover.snake { transform: translateY(-2px) scale(1.02) skewX(-0.5deg); }
+    .card:hover .cover.invaders,
+    .card:hover .cover.galaga{ transform: translateY(-2px) scale(1.025); }
+    .card:hover .cover.tetris{ transform: translateY(-2px) scale(1.02) rotate(0.2deg); }
+    .card:hover .cover.pong  { transform: translateY(-2px) scale(1.015); }
+    .card:hover .cover.arkanoid{ transform: translateY(-2px) scale(1.02); }
+    .card:hover .cover.asteroids{ transform: translateY(-2px) scale(1.02); }
+
+    /* animação da varredura */
+    @keyframes cover-sweep{
+      0%   { transform: translateY(-100%); }
+      100% { transform: translateY(100%);  }
     }
 
-    .card {
-      background: linear-gradient(135deg, #2d1f55, #5a47a5);
-      color: white;
-      padding: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      animation: fadeIn 1s ease;
-      z-index: 2;
+    /* efeito “scanline” interno ainda mais retro (bem sutil) */
+    .cover .scanlines{
+      position:absolute; inset:0; pointer-events:none;
+      background:
+        repeating-linear-gradient(0deg,
+          rgba(0,0,0,0) 0px,
+          rgba(0,0,0,0) 1px,
+          rgba(0,0,0,.18) 2px,
+          rgba(0,0,0,.18) 3px);
+      opacity:.0;
+      transition:opacity .25s ease;
     }
+    .card:hover .cover .scanlines{ opacity:.25; }
 
-    .card .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .card .top .logo {
-      font-size: 24px;
-    }
-
-    .card .chip {
-      width: 50px;
-      height: 35px;
-      background: linear-gradient(45deg, #ddd, #999);
-      border-radius: 6px;
-    }
-
-    .card .number {
-      font-size: 20px;
-      letter-spacing: 2px;
-      margin: 20px 0 10px;
-      transition: 0.3s;
-    }
-
-    .card .number.glow {
-      animation: glowNumber 0.4s ease;
-    }
-
-    .card .bottom {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-    }
-
-    @keyframes glowNumber {
-      0% { color: #fff; text-shadow: 0 0 10px #fff; }
-      100% { color: #ddd; text-shadow: none; }
-    }
-
-    .card-back {
-      background: linear-gradient(135deg, #222, #444);
-      color: white;
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      font-weight: bold;
-      font-family: monospace;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-      transform: rotateY(180deg);
-    }
-
-    .cvv-box {
-      background-color: #eee;
-      color: #000;
-      padding: 8px 14px;
-      border-radius: 6px;
-      box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
-    }
-
-    .formulario {
-      background-color: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      max-width: 400px;
-      width: 100%;
-      animation: fadeIn 2s ease;
-    }
-
-    .formulario h2 {
-      margin-bottom: 20px;
-      font-size: 20px;
-      color: #111;
-      text-align: center;
-    }
-
-    .formulario h2 span {
-      background: #cfd5f3;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-
-    label {
-      display: block;
-      margin: 15px 0 5px;
-      font-weight: bold;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      transition: 0.3s;
-    }
-
-    input:focus {
-      border-color: #44307a;
-      outline: none;
-    }
-
-    .erro {
-      border-color: red !important;
-    }
-
-    .row {
-      display: flex;
-      gap: 10px;
-    }
-
-    .row input {
-      flex: 1;
-    }
-
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      background-color: #44307a;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background-color: #35225e;
-    }
-
-    .verificacao {
-      font-size: 12px;
-      margin-top: 10px;
-      color: gray;
-      text-align: center;
-    }
-
-    .mensagem-dialogo {
-      display: none;
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      animation: fadeIn 0.6s ease;
-      max-width: 300px;
-      z-index: 9999;
-    }
-
-    .mensagem-dialogo i {
-      margin-right: 10px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 850px) {
-      .container {
-        flex-direction: column;
-        align-items: center;
+    /* reduzir movimento quando o usuário prefere menos animação */
+    @media (prefers-reduced-motion: reduce){
+      .card .cover,
+      .card .cover::after,
+      .card .cover::before{
+        transition:none !important;
+        animation:none !important;
       }
-
-      .cards, .formulario {
-        width: 100%;
-        max-width: 350px;
+      .card:hover .cover{
+        transform:none; box-shadow: inset 0 0 0 2px var(--shadow-color);
+        filter:none;
       }
-
-      body {
-        background: linear-gradient(to bottom, #1b1033 50%, #f5f5f5 50%);
+      .card:hover .cover::after,
+      .card:hover .cover::before,
+      .card:hover .cover .scanlines{
+        opacity:0 !important;
       }
+    }
 
-      .mensagem-dialogo {
-        bottom: 20px;
-        right: 50%;
-        transform: translateX(50%);
-      }
+
+    /* Pac-Man: fundo azul escuro + pacman amarelo */
+    .cover.pac{
+      background:
+        radial-gradient(circle at 30% 50%, yellow 0 20%, transparent 21%),
+        repeating-linear-gradient(#00008b 0 4px, #000 4px 8px);
+    }
+    /* Snake: fundo verde e pixel snake */
+    .cover.snake{
+      background:
+        linear-gradient(90deg, green 0 10%, transparent 10% 20%, green 20% 30%, transparent 30% 40%, green 40% 50%, transparent 50% 60%, green 60% 70%, transparent 70% 80%, green 80% 90%, transparent 90% 100%),
+        linear-gradient(0deg, green 0 10%, transparent 10% 20%, green 20% 30%, transparent 30% 40%, green 40% 50%, transparent 50% 60%, green 60% 70%, transparent 70% 80%, green 80% 90%, transparent 90% 100%),
+        #004400;
+    }
+    /* Space Invaders: preto com aliens */
+    .cover.invaders{
+      background-color:#000;
+    }
+    .cover.invaders::before{
+      content:"👾 👾 👾";
+      font-size:28px;
+      position:absolute;
+      top:20%;left:50%;transform:translateX(-50%);
+    }
+    /* Tetris: blocos coloridos */
+    .cover.tetris{
+      background:
+        linear-gradient(90deg, #ff0 0 25%, #0ff 25% 50%, #f0f 50% 75%, #f00 75% 100%),
+        linear-gradient(#0f0 0 25%, transparent 25% 50%, #00f 50% 75%, transparent 75% 100%);
+      background-size:40px 40px;
+    }
+    /* Pong: preto com barra e bola */
+    .cover.pong{
+      background-color:#000;
+    }
+    .cover.pong::before, .cover.pong::after{
+      content:"";
+      position:absolute;
+      width:6px;height:30%;
+      top:35%;
+      background:#fff;
+    }
+    .cover.pong::before{left:8px;}
+    .cover.pong::after{right:8px;}
+    .cover.pong::after{
+      box-shadow: -150px 10px 0 -3px #fff;
+    }
+    /* Arkanoid: blocos no topo e barra no fundo */
+    .cover.arkanoid{
+      background:
+        repeating-linear-gradient(90deg, red 0 20px, orange 20px 40px, yellow 40px 60px, green 60px 80px, blue 80px 100px, purple 100px 120px),
+        #000;
+    }
+    /* Asteroids: fundo preto e pedras cinzas */
+    .cover.asteroids{
+      background-color:#000;
+    }
+    .cover.asteroids::before{
+      content:"⬡ ⬡ ⬡";
+      font-size:28px;
+      position:absolute;
+      top:35%;left:50%;transform:translateX(-50%);
+      color:#aaa;
+    }
+
+
+
+
+    /* ===== Footer ===== */
+    .site-footer{
+      text-align:center; opacity:.85; padding-top:10px;
+      font-size:clamp(14px, 2vw, 16px);
+    }
+
+    /* ===== Overlay CRT ===== */
+    #crtOverlay{
+      pointer-events:none; position:fixed; inset:0; z-index:50;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,.05), transparent 8%),
+        repeating-linear-gradient(0deg,
+          rgba(0,0,0,0) 0px,
+          rgba(0,0,0,0) 1px,
+          rgba(0,0,0,.28) 2px,
+          rgba(0,0,0,.28) 3px);
+      mix-blend-mode:soft-light;
+      opacity:var(--crt-opacity);
+      transition: opacity .25s ease;
+    }
+
+    /* ===== Animações ===== */
+    @keyframes fade-in{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)} }
+
+    /* ===== Redução de movimento ===== */
+    @media (prefers-reduced-motion:reduce){
+      .site-header{animation:none}
+      .card, #crtOverlay{transition:none}
     }
   </style>
 </head>
+
 <body>
+  <a class="skip-link" href="#grid">Pular para a grade de jogos</a>
 
-  <div class="container">
+  <!-- ===== Header ===== -->
+  <header class="site-header" role="banner">
+    <div class="brand" aria-label="RetroPlay">
+      <span class="logo" aria-hidden="true">🎮</span>
+      <h1 class="title">RetroPlay</h1>
+    </div>
+    <p class="tagline">Reviva os clássicos diretamente no navegador!</p>
 
-    <!-- Cartão com frente e verso -->
-    <div class="cards" id="cartao">
-      <div class="card">
-        <div class="top">
-          <div class="logo"><i class="fas fa-university"></i> Banco</div>
-          <div class="chip"></div>
-        </div>
-        <div class="number" id="cardNumber"><i class="fas fa-credit-card"></i> 0000 0000 0000 0000</div>
-        <div class="bottom">
-          <div class="name" id="cardName">NOME NO CARTÃO</div>
-          <div class="valid" id="cardDate">Válido até 12/29</div>
-        </div>
-      </div>
-      <div class="card-back">
-        CVV: <span class="cvv-box" id="cvvBox">000</span>
+    <div class="toolbar" role="region" aria-label="Ferramentas">
+      <!-- Busca -->
+      <label class="search" aria-label="Buscar jogo">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" focusable="false">
+          <path d="M21 21l-4.35-4.35m1.35-5.65a7 7 0 11-14 0 7 7 0 0114 0z"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input id="searchInput" type="search"
+               placeholder="Buscar jogo (ex: pac, tet, invaders…)"
+               inputmode="search" autocomplete="off" />
+      </label>
+
+      <!-- Seletor de Tema (3 temas) -->
+      <div class="toggles" role="group" aria-label="Aparência">
+        <button id="themeCycle" class="btn" type="button" aria-label="Alternar tema (Retro, Neon, Noir)" aria-pressed="false">
+          Tema: <strong id="themeLabel">Retro</strong>
+        </button>
+
+        <!-- CRT -->
+        <label class="switch" title="Efeito CRT (scanlines)">
+          <input id="crtToggle" type="checkbox" />
+          <span>CRT</span>
+        </label>
+
+        <!-- Alto contraste (extra) -->
+        <label class="switch" title="Alto contraste">
+          <input id="hcToggle" type="checkbox" />
+          <span>HC</span>
+        </label>
+
+        <!-- Ajuda (atalhos) -->
+        <button id="helpBtn" class="btn" type="button" aria-haspopup="dialog" aria-controls="helpDialog" aria-expanded="false">
+          Ajuda / ?
+        </button>
       </div>
     </div>
+  </header>
 
-    <!-- Formulário -->
-    <div class="formulario">
-      <h2>Veja se seu cartão <span>vazou</span> na internet</h2>
+  <!-- ===== Modal de Ajuda (atalhos & dicas) ===== -->
+  <div id="modalBackdrop" hidden
+       style="position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(2px);z-index:60;"></div>
 
-      <label for="nome">Nome no cartão</label>
-      <input type="text" id="nome" placeholder="Ex: João da Silva" oninput="atualizarNome(this)">
+  <dialog id="helpDialog" aria-labelledby="helpTitle"
+          style="
+            max-width:min(760px, 94vw);
+            border:2px solid color-mix(in oklab, var(--accent) 50%, black 50%);
+            border-radius:16px;
+            background:
+              linear-gradient(180deg, color-mix(in oklab, var(--card) 94%, black 6%), color-mix(in oklab, var(--card) 80%, black 20%));
+            color:var(--text);
+            box-shadow: 16px 16px 0 var(--shadow-color);
+            padding:18px 18px 12px;
+            z-index:70;
+          ">
+    <form method="dialog" style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;">
+      <h2 id="helpTitle" style="margin:0;font-family:var(--ff-display);font-size:20px;color:var(--accent);text-shadow:2px 2px var(--shadow-color);">
+        Atalhos & Dicas
+      </h2>
+      <button id="closeHelp" class="btn" value="cancel" type="submit" aria-label="Fechar ajuda">Fechar</button>
+    </form>
 
-      <label for="numero">Número do cartão</label>
-      <input type="text" id="numero" maxlength="19" placeholder="0000 0000 0000 0000" oninput="formatarNumeroCartao(this)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;">
+      <section>
+        <h3 style="margin:0 0 8px;font-size:18px;">Navegação</h3>
+        <ul style="margin:0 0 10px 18px;line-height:1.25;">
+          <li><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd>: mover foco</li>
+          <li><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> ou <kbd>WASD</kbd>: navegar entre cards</li>
+          <li><kbd>Enter</kbd> na busca: foca o primeiro resultado</li>
+        </ul>
 
-      <div class="row">
-        <div>
-          <label for="exp">Data de expiração</label>
-          <input type="text" id="exp" maxlength="5" placeholder="MM/AA" oninput="formatarData(this)">
+        <h3 style="margin:10px 0 8px;font-size:18px;">Aparência</h3>
+        <ul style="margin:0 0 10px 18px;line-height:1.25;">
+          <li><strong>Tema</strong>: Retro → Neon → Noir (botão “Tema”)</li>
+          <li><strong>CRT</strong>: liga/desliga scanlines</li>
+          <li><strong>HC</strong>: alto contraste de bordas e sombras</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3 style="margin:0 0 8px;font-size:18px;">Dicas</h3>
+        <ul style="margin:0 0 10px 18px;line-height:1.25;">
+          <li>Use palavras incompletas na busca: “pac”, “tet”, “inva”…</li>
+          <li>Preferências ficam salvas (tema, CRT, HC).</li>
+          <li>Motion-friendly: respeita <em>prefers-reduced-motion</em>.</li>
+        </ul>
+
+        <div style="margin-top:12px;padding:10px;border:2px dashed color-mix(in oklab, var(--accent) 60%, black 40%);border-radius:12px;">
+          <p style="margin:0;font-size:16px;">Queremos feedback! Em breve: favoritos ⭐, capas 8-bit e filtros por gênero.</p>
         </div>
-        <div>
-          <label for="cvv">CVV</label>
-          <input type="text" id="cvv" maxlength="3" placeholder="123" 
-            oninput="formatarCVV(this)" 
-            onfocus="virarCartao(true)" 
-            onblur="virarCartao(false)">
-        </div>
-      </div>
-
-      <label for="senha">Senha do cartão</label>
-      <input type="password" id="senha" placeholder="******">
-
-      <button onclick="validarFormulario()">Verificar</button>
-
-      <div class="verificacao"><i class="fas fa-shield-alt"></i> É verdadeiro este site</div>
+      </section>
     </div>
-  </div>
+  </dialog>
 
-  <!-- Diálogo -->
-  <div class="mensagem-dialogo" id="mensagemDialogo">
-    <i class="fas fa-check-circle"></i>
-    Seu cartão <strong>não foi vazado</strong> na internet.
-  </div>
+  <!-- Overlay CRT (ligado via JS) -->
+  <div id="crtOverlay" aria-hidden="true"></div>
 
-  <script>
-    function formatarNumeroCartao(input) {
-      let valor = input.value.replace(/\D/g, '').substring(0, 16);
-      let formatado = valor.replace(/(\d{4})(?=\d)/g, '$1 ');
-      input.value = formatado.trim();
+    <!-- ===== Hero (opcional, leve) ===== -->
+  <section
+    class="hero"
+    style="
+      width:min(1200px,100%);
+      margin:0 auto 14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      padding:12px;
+      border:2px solid color-mix(in oklab, var(--accent) 55%, black 45%);
+      border-radius:16px;
+      background:
+        linear-gradient(180deg, color-mix(in oklab, var(--card) 90%, black 10%), color-mix(in oklab, var(--card) 75%, black 25%));
+      box-shadow: 12px 12px 0 var(--shadow-color);
+    "
+    aria-label="Destaques"
+  >
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;">
+      <h2 style="margin:0;font-family:var(--ff-display);font-size:clamp(18px,3vw,24px);color:var(--accent);text-shadow:2px 2px var(--shadow-color);">
+        Destaque do mês
+      </h2>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="font-size:16px;opacity:.95;">Novo: capas 8-bit em breve</span>
+        <span aria-hidden="true" style="font-size:18px">✨</span>
+      </div>
+    </div>
+    <p style="margin:0;opacity:.95;font-size:clamp(15px,2.2vw,18px);">
+      Que tal começar com <strong>Pac-Man</strong> ou encarar as linhas de <strong>Tetris</strong>? Use a busca acima para filtrar rápido. 😉
+    </p>
+  </section>
 
-      const cardDisplay = document.getElementById('cardNumber');
-      cardDisplay.innerHTML = '<i class="fas fa-credit-card"></i> ' + (formatado || '0000 0000 0000 0000');
-      cardDisplay.classList.add('glow');
-      setTimeout(() => cardDisplay.classList.remove('glow'), 300);
-    }
+  <!-- ===== Conteúdo principal ===== -->
+  <main class="content" role="main">
+    <section class="grid" id="grid" aria-label="Lista de jogos">
+      <!-- Use data-* para busca e futuros filtros -->
+      <a class="card"
+         href="jogos/pacman.html"
+         data-title="pac-man"
+         data-genre="labirinto arcade classico"
+         tabindex="0">
+        <div class="cover pac" role="img" aria-label="Capa 8-bit de Pac-Man com labirinto estilizado">
+            <span class="scanlines" aria-hidden="true"></span>
+        </div>
+<h2>Pac-Man</h2>
+<p>Labirintos, power-pellets e fantasmas famintos.</p>
 
-    function formatarData(input) {
-      let valor = input.value.replace(/\D/g, '').substring(0, 4);
-      if (valor.length >= 3) {
-        input.value = valor.replace(/(\d{2})(\d{1,2})/, '$1/$2');
-      } else {
-        input.value = valor;
-      }
-      document.getElementById("cardDate").textContent = input.value ? `Válido até ${input.value}` : "Válido até 12/29";
-    }
+      </a>
 
-    function formatarCVV(input) {
-      input.value = input.value.replace(/\D/g, '').substring(0, 3);
-      document.getElementById('cvvBox').textContent = input.value || '000';
-    }
+      <a class="card"
+         href="jogos/snake.html"
+         data-title="snake"
+         data-genre="arcade reflexo classico"
+         tabindex="0">
+        <div class="cover snake" role="img" aria-label="Capa 8-bit de Snake em grade verde"></div>
+<h2>Snake</h2>
+<p>Cresça sem morder o próprio rabo. Fácil? Nem tanto.</p>
+      </a>
 
-    function atualizarNome(input) {
-      input.value = input.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
-      document.getElementById("cardName").textContent = input.value || "NOME NO CARTÃO";
-    }
+      <a class="card"
+         href="jogos/space-invaders.html"
+         data-title="space invaders"
+         data-genre="tiro naves arcade"
+         tabindex="0">
+        <div class="cover invaders" role="img" aria-label="Capa 8-bit de Space Invaders com alienígenas"></div>
+<h2>Space Invaders</h2>
+<p>Defenda a Terra dos invasores pixelados.</p>
+      </a>
 
-    function virarCartao(virar) {
-      const cartao = document.getElementById("cartao");
-      if (virar) {
-        cartao.classList.add("virar");
-      } else {
-        cartao.classList.remove("virar");
-      }
-    }
+      <a class="card"
+         href="jogos/tetris.html"
+         data-title="tetris"
+         data-genre="puzzle classico blocos"
+         tabindex="0">
+        <div class="cover tetris" role="img" aria-label="Capa 8-bit de Tetris com blocos multicoloridos"></div>
+<h2>Tetris</h2>
+<p>Empilhe peças, limpe linhas, vença o caos.</p>
+      </a>
 
-    function validarFormulario() {
-      const campos = ["nome", "numero", "exp", "cvv", "senha"];
-      let vazio = false;
+      <a class="card"
+         href="jogos/pong.html"
+         data-title="pong"
+         data-genre="esporte arcade classico"
+         tabindex="0">
+        <div class="cover pong" role="img" aria-label="Capa 8-bit de Pong com barras e bola"></div>
+<h2>Pong</h2>
+<p>O duelo de raquetes que começou tudo.</p>
+      </a>
 
-      campos.forEach(id => {
-        const campo = document.getElementById(id);
-        if (!campo.value.trim()) {
-          campo.classList.add("erro");
-          vazio = true;
+      <a class="card"
+         href="jogos/arkanoid.html"
+         data-title="arkanoid"
+         data-genre="breakout blocos reflexo"
+         tabindex="0">
+        <div class="cover arkanoid" role="img" aria-label="Capa 8-bit de Arkanoid com blocos coloridos"></div>
+<h2>Arkanoid</h2>
+<p>Quebre blocos, pegue power-ups, prossiga.</p>
+      </a>
+
+      <a class="card"
+         href="jogos/asteroids.html"
+         data-title="asteroids"
+         data-genre="nave fisica tiro"
+         tabindex="0">
+        <div class="cover asteroids" role="img" aria-label="Capa 8-bit de Asteroids com rochas espaciais"></div>
+<h2>Asteroids</h2>
+<p>Asteroides por todos os lados. Mire e acelere.</p>
+      </a>
+
+      <!-- Espaço para crescer fácil: copie o bloco abaixo e ajuste os atributos -->
+      <a class="card"
+         href="jogos/galaga.html"
+         data-title="galaga"
+         data-genre="tiro nave classico"
+         tabindex="0">
+        <div class="cover invaders" role="img" aria-label="Capa 8-bit estilo naves para Galaga"></div>
+<h2>Galaga</h2>
+<p>Formações inimigas e capturas táticas no espaço.</p>
+      </a>
+
+      <a class="card"
+         href="jogos/breakout.html"
+         data-title="breakout"
+         data-genre="breakout blocos arcade"
+         tabindex="0">
+        <div class="cover arkanoid" role="img" aria-label="Capa 8-bit estilo blocos para Breakout"></div>
+<h2>Breakout</h2>
+<p>A origem do vício de quebrar blocos.</p>
+      </a>
+    </section>
+  </main>
+
+  <!-- ===== Rodapé ===== -->
+  <footer class="site-footer" role="contentinfo">
+    <small>&copy; 2025 <strong>rogerplay</strong>. Fase de testes. • <span id="footTheme">Tema: Retro</span></small>
+  </footer>
+
+    <script>
+    (()=>{
+      const $ = (sel, el=document) => el.querySelector(sel);
+      const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+      const root = document.documentElement;
+
+      // ===== Elementos =====
+      const searchInput = $('#searchInput');
+      const grid        = $('#grid');
+      const cards       = $$('.card');
+      const themeBtn    = $('#themeCycle');
+      const themeLabel  = $('#themeLabel');
+      const footTheme   = $('#footTheme');
+      const crtToggle   = $('#crtToggle');
+      const hcToggle    = $('#hcToggle');
+      const helpBtn     = $('#helpBtn');
+      const helpDialog  = $('#helpDialog');
+      const backdrop    = $('#modalBackdrop');
+      const crtOverlay  = $('#crtOverlay');
+
+      // ===== Preferências (localStorage) =====
+      const LS = {
+        theme: 'retroplay:theme',
+        crt:   'retroplay:crt',
+        hc:    'retroplay:hc',
+        q:     'retroplay:q'
+      };
+
+      // ===== Tema (ciclo Retro -> Neon -> Noir) =====
+      const THEMES = ['retro','neon','noir'];
+      const getTheme = () => root.getAttribute('data-theme') || 'retro';
+      const setTheme = (t) => {
+        root.setAttribute('data-theme', t);
+        localStorage.setItem(LS.theme, t);
+        themeLabel.textContent = t[0].toUpperCase() + t.slice(1);
+        if (footTheme) footTheme.textContent = `Tema: ${themeLabel.textContent}`;
+        themeBtn.setAttribute('aria-pressed', String(t !== 'retro'));
+        // Ajuste de theme-color para PWA/Android address bar
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) {
+          const map = { retro:'#0f380f', neon:'#0b1020', noir:'#0b0b0c' };
+          metaTheme.setAttribute('content', map[t] || '#0f380f');
+        }
+      };
+      const savedTheme = localStorage.getItem(LS.theme);
+      setTheme(THEMES.includes(savedTheme) ? savedTheme : getTheme());
+
+      themeBtn.addEventListener('click', ()=>{
+        const idx = THEMES.indexOf(getTheme());
+        const next = THEMES[(idx+1)%THEMES.length];
+        setTheme(next);
+      });
+
+      // ===== CRT =====
+      const setCRT = (on) => {
+        root.style.setProperty('--crt-opacity', on ? '0.25' : '0');
+        localStorage.setItem(LS.crt, on ? 'on' : 'off');
+      };
+      crtToggle.checked = localStorage.getItem(LS.crt) === 'on';
+      setCRT(crtToggle.checked);
+      crtToggle.addEventListener('change', ()=> setCRT(crtToggle.checked));
+
+      // ===== Alto Contraste (boost nas sombras/bordas via vars) =====
+      const setHC = (on) => {
+        // aumenta sombra e dá um tapinha no gradiente do card
+        root.style.setProperty('--shadow-offset', on ? '14px' : '10px');
+        root.style.setProperty('--card-grad-top', on ? 'color-mix(in oklab, var(--accent) 16%, transparent)' : 'var(--card-grad-top)');
+        // atributo para futuros hooks de CSS
+        root.toggleAttribute('data-hc', on);
+        localStorage.setItem(LS.hc, on ? 'on' : 'off');
+      };
+      hcToggle.checked = localStorage.getItem(LS.hc) === 'on';
+      setHC(hcToggle.checked);
+      hcToggle.addEventListener('change', ()=> setHC(hcToggle.checked));
+
+      // ===== Busca instantânea =====
+      const norm = (s) => s
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '');
+
+      const filterCards = (query) => {
+        const q = norm(query.trim());
+        let firstVisible = null;
+        cards.forEach(card => {
+          const title = (card.dataset.title || card.textContent || '');
+          const genres = (card.dataset.genre || '');
+          const hay = norm(title + ' ' + genres);
+          const match = !q || hay.includes(q);
+          card.style.display = match ? '' : 'none';
+          if (match && !firstVisible) firstVisible = card;
+        });
+        if (q && firstVisible) {
+          grid.dataset.firstVisible = cards.indexOf(firstVisible);
         } else {
-          campo.classList.remove("erro");
+          delete grid.dataset.firstVisible;
+        }
+      };
+
+      // restaura última busca
+      const savedQ = localStorage.getItem(LS.q) || '';
+      if (savedQ) {
+        searchInput.value = savedQ;
+        filterCards(savedQ);
+      }
+
+      // debounce leve
+      let t;
+      searchInput.addEventListener('input', ()=>{
+        clearTimeout(t);
+        const val = searchInput.value;
+        t = setTimeout(()=>{
+          localStorage.setItem(LS.q, val);
+          filterCards(val);
+        }, 80);
+      });
+
+      // Enter na busca -> foca primeiro resultado
+      searchInput.addEventListener('keydown', (e)=>{
+        if (e.key === 'Enter') {
+          const idxStr = grid.dataset.firstVisible;
+          if (idxStr !== undefined) {
+            const el = cards[parseInt(idxStr,10)];
+            if (el && el.offsetParent !== null) el.focus();
+          }
+        }
+        // '?' abre ajuda rapidamente quando o campo está focado
+        if ((e.key === '?' || (e.key === '/' && e.shiftKey)) && !e.ctrlKey && !e.altKey) {
+          e.preventDefault();
+          openHelp();
         }
       });
 
-      if (!vazio) {
-        mostrarMensagem();
-      }
-    }
+      // ===== Navegação por teclado na grade (setas/WASD) =====
+      grid.addEventListener('keydown', (e)=>{
+        const keys = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D'];
+        if (!keys.includes(e.key)) return;
 
-    function mostrarMensagem() {
-      const dialogo = document.getElementById("mensagemDialogo");
-      dialogo.style.display = "block";
-      setTimeout(() => {
-        dialogo.style.display = "none";
-      }, 5000);
-    }
+        const visible = cards.filter(c => c.offsetParent !== null);
+        const cols = computeColumns(visible);
+        const current = visible.indexOf(document.activeElement);
+        if (current === -1) return;
+
+        e.preventDefault();
+        let next = current;
+        switch (e.key) {
+          case 'ArrowLeft': case 'a': case 'A': next = Math.max(0, current - 1); break;
+          case 'ArrowRight': case 'd': case 'D': next = Math.min(visible.length - 1, current + 1); break;
+          case 'ArrowUp': case 'w': case 'W': next = Math.max(0, current - cols); break;
+          case 'ArrowDown': case 's': case 'S': next = Math.min(visible.length - 1, current + cols); break;
+        }
+        visible[next]?.focus();
+      });
+
+      function computeColumns(visible) {
+        if (visible.length < 2) return 1;
+        const y0 = visible[0].getBoundingClientRect().top;
+        let c = 1;
+        for (let i = 1; i < visible.length; i++) {
+          if (Math.abs(visible[i].getBoundingClientRect().top - y0) < 5) c++;
+          else break;
+        }
+        return c;
+      }
+
+      // ===== Modal de Ajuda =====
+      let lastActive = null;
+
+      function trapFocus(e) {
+        if (helpDialog.open !== true) return;
+        if (e.key !== 'Tab') return;
+
+        const focusables = $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', helpDialog)
+          .filter(el => !el.hasAttribute('disabled') && el.offsetParent !== null);
+
+        if (focusables.length === 0) return;
+
+        const first = focusables[0];
+        const last  = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            last.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === last) {
+            first.focus();
+            e.preventDefault();
+          }
+        }
+      }
+
+      function openHelp() {
+        if (helpDialog.open) return;
+        lastActive = document.activeElement;
+        backdrop.hidden = false;
+
+        if (typeof helpDialog.showModal === 'function') {
+          helpDialog.showModal();
+        } else {
+          helpDialog.setAttribute('open','');
+          helpDialog.style.display = 'block';
+        }
+        helpBtn.setAttribute('aria-expanded','true');
+        // foca primeiro botão do dialog (Fechar)
+        const first = $('#closeHelp', helpDialog) || helpDialog;
+        first.focus();
+
+        document.addEventListener('keydown', trapFocus);
+      }
+
+      function closeHelp() {
+        if (!helpDialog.open) return;
+        if (typeof helpDialog.close === 'function') {
+          helpDialog.close();
+        } else {
+          helpDialog.removeAttribute('open');
+          helpDialog.style.display = 'none';
+        }
+        backdrop.hidden = true;
+        helpBtn.setAttribute('aria-expanded','false');
+        document.removeEventListener('keydown', trapFocus);
+        if (lastActive && document.body.contains(lastActive)) lastActive.focus();
+      }
+
+      helpBtn.addEventListener('click', openHelp);
+      $('#closeHelp', helpDialog)?.addEventListener('click', (e)=>{ e.preventDefault(); closeHelp(); });
+      backdrop.addEventListener('click', closeHelp);
+
+      // ESC fecha o modal; '?' abre
+      document.addEventListener('keydown', (e)=>{
+        if (e.key === 'Escape' && helpDialog.open) {
+          e.preventDefault(); closeHelp();
+        }
+        // abre ajuda com '?' fora de inputs
+        const targetTag = (e.target?.tagName || '').toLowerCase();
+        const inField = ['input','textarea','select'].includes(targetTag) || e.target?.isContentEditable;
+        if (!inField && (e.key === '?' || (e.key === '/' && e.shiftKey)) && !e.ctrlKey && !e.altKey) {
+          e.preventDefault(); openHelp();
+        }
+      });
+
+      // ===== Pequenos aprimoramentos =====
+      // Dê uma piscadinha suave no logo ao trocar tema (respeita prefers-reduced-motion)
+      const mediaReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+      function wink() {
+        if (mediaReduce.matches) return;
+        const logo = $('.logo');
+        if (!logo) return;
+        logo.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}], {duration:300, easing:'ease-out'});
+      }
+      themeBtn.addEventListener('click', wink);
+
+      // Se clicar no CRT label, dá um “scan flicker” rápido
+      const flick = ()=>{
+        if (mediaReduce.matches) return;
+        crtOverlay.animate([{opacity:getComputedStyle(root).getPropertyValue('--crt-opacity')},{opacity:'0.4'},{opacity:getComputedStyle(root).getPropertyValue('--crt-opacity')}],{duration:220,easing:'ease-out'});
+      };
+      $('#crtToggle')?.addEventListener('change', flick);
+
+      // Acessibilidade extra: se não houver resultado de busca, injeta um aviso discreto
+      const noResId = 'no-results-msg';
+      const ensureNoResults = ()=>{
+        const hasVisible = cards.some(c => c.offsetParent !== null);
+        let msg = $('#'+noResId);
+        if (!hasVisible) {
+          if (!msg) {
+            msg = document.createElement('div');
+            msg.id = noResId;
+            msg.role = 'status';
+            msg.style.margin = '12px auto';
+            msg.style.width = 'fit-content';
+            msg.style.padding = '10px 14px';
+            msg.style.border = '2px dashed';
+            msg.style.borderColor = 'color-mix(in oklab, var(--accent) 60%, black 40%)';
+            msg.style.borderRadius = '12px';
+            msg.style.boxShadow = '6px 6px 0 var(--shadow-color)';
+            msg.textContent = 'Nenhum jogo encontrado. Tente outra palavra.';
+            grid.after(msg);
+          }
+        } else if (msg) {
+          msg.remove();
+        }
+      };
+      // observa mudanças de display nos cards para atualizar aviso
+      const obs = new MutationObserver(ensureNoResults);
+      cards.forEach(c => obs.observe(c, {attributes:true, attributeFilter:['style']}));
+      ensureNoResults();
+    })();
   </script>
 
+  <!-- ===== Aviso para quem desativa JS ===== -->
+  <noscript>
+    <div class="noscript"
+         style="margin:12px auto;background:#8a1f1f;color:#fff;border:2px solid #000;
+                padding:10px 14px;width:fit-content;border-radius:10px;box-shadow:4px 4px 0 #000;">
+      Ative o JavaScript para usar a busca, alternar temas e ver os efeitos visuais.
+    </div>
+  </noscript>
+
+  <!-- ===== Pequenos aprimoramentos de compatibilidade ===== -->
+  <script>
+    // Se o navegador não suporta <dialog>, garante acessibilidade mínima:
+    (function(){
+      const dlg = document.getElementById('helpDialog');
+      if (!dlg) return;
+      if (typeof dlg.showModal !== 'function') {
+        dlg.setAttribute('role','dialog');
+        dlg.setAttribute('aria-modal','true');
+      }
+    })();
+  </script>
 </body>
 </html>
+

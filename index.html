@@ -513,7 +513,7 @@
     </div>
     <p class="tagline">Reviva os clássicos diretamente no navegador!</p>
 
-    <div class="toolbar" role="region" aria-label="Ferramentas">
+<div class="toolbar" role="region" aria-label="Ferramentas">
   <!-- Busca -->
   <label class="search" aria-label="Buscar jogo">
     <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" focusable="false">
@@ -525,78 +525,75 @@
            inputmode="search" autocomplete="off" />
   </label>
 
-  <!-- Tema e Ajuda -->
+  <!-- Tema / Favoritos / Ajuda -->
   <div class="toggles" role="group" aria-label="Aparência, favoritos e ajuda">
-  <button id="themeCycle" class="btn" type="button" aria-label="Alternar tema (Retro, Neon, Noir)" aria-pressed="false">
-    Tema: <strong id="themeLabel">Retro</strong>
-  </button>
+    <button id="themeCycle" class="btn" type="button" aria-label="Alternar tema (Retro, Neon, Noir)" aria-pressed="false">
+      Tema: <strong id="themeLabel">Retro</strong>
+    </button>
 
-  <button id="favFilter" class="btn" type="button" aria-pressed="false" title="Mostrar apenas favoritos">
-    Somente favoritos ⭐
-  </button>
+    <button id="favFilter" class="btn" type="button" aria-pressed="false" title="Mostrar apenas favoritos">
+      Somente favoritos ⭐
+    </button>
 
-  <button id="helpBtn" class="btn" type="button" aria-haspopup="dialog" aria-controls="helpDialog" aria-expanded="false">
-    Ajuda / ?
-  </button>
-</div>
+    <button id="helpBtn" class="btn" type="button" aria-haspopup="dialog" aria-controls="helpDialog" aria-expanded="false">
+      Ajuda / ?
+    </button>
+  </div>
 </div>
 
   </header>
 
   <!-- ===== Modal de Ajuda (atalhos & dicas) ===== -->
-  <div id="modalBackdrop" hidden
-       style="position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(2px);z-index:60;"></div>
+  <!-- Backdrop para o modal -->
+<div id="modalBackdrop" hidden
+     style="position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(2px);z-index:60;"></div>
 
-  <dialog id="helpDialog" aria-labelledby="helpTitle"
-          style="
-            max-width:min(760px, 94vw);
-            border:2px solid color-mix(in oklab, var(--accent) 50%, black 50%);
-            border-radius:16px;
-            background:
-              linear-gradient(180deg, color-mix(in oklab, var(--card) 94%, black 6%), color-mix(in oklab, var(--card) 80%, black 20%));
-            color:var(--text);
-            box-shadow: 16px 16px 0 var(--shadow-color);
-            padding:18px 18px 12px;
-            z-index:70;
-          ">
-    <form method="dialog" style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;">
-      <h2 id="helpTitle" style="margin:0;font-family:var(--ff-display);font-size:20px;color:var(--accent);text-shadow:2px 2px var(--shadow-color);">
-        Atalhos & Dicas
-      </h2>
-      <button id="closeHelp" class="btn" value="cancel" type="submit" aria-label="Fechar ajuda">Fechar</button>
-    </form>
+<!-- Dialog de ajuda -->
+<dialog id="helpDialog" aria-labelledby="helpTitle"
+        style="
+          max-width:min(760px, 94vw);
+          border:2px solid color-mix(in oklab, var(--accent) 50%, black 50%);
+          border-radius:16px;
+          background:
+            linear-gradient(180deg, color-mix(in oklab, var(--card) 94%, black 6%), color-mix(in oklab, var(--card) 80%, black 20%));
+          color:var(--text);
+          box-shadow: 16px 16px 0 var(--shadow-color);
+          padding:18px 18px 12px;
+          z-index:70;">
+  <form method="dialog" style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px;">
+    <h2 id="helpTitle" style="margin:0;font-family:var(--ff-display);font-size:20px;color:var(--accent);text-shadow:2px 2px var(--shadow-color);">
+      Atalhos & Dicas
+    </h2>
+    <button id="closeHelp" class="btn" value="cancel" type="submit" aria-label="Fechar ajuda">Fechar</button>
+  </form>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;">
-      <section>
-        <h3 style="margin:0 0 8px;font-size:18px;">Navegação</h3>
-        <ul style="margin:0 0 10px 18px;line-height:1.25;">
-          <li><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd>: mover foco</li>
-          <li><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> ou <kbd>WASD</kbd>: navegar entre cards</li>
-          <li><kbd>Enter</kbd> na busca: foca o primeiro resultado</li>
-        </ul>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;">
+    <section>
+      <h3 style="margin:0 0 8px;font-size:18px;">Navegação</h3>
+      <ul style="margin:0 0 10px 18px;line-height:1.25;">
+        <li><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd>: mover foco</li>
+        <li><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> ou <kbd>WASD</kbd>: navegar entre cards</li>
+        <li><kbd>Enter</kbd> na busca: foca o primeiro resultado</li>
+      </ul>
 
-        <h3 style="margin:10px 0 8px;font-size:18px;">Aparência</h3>
-<ul style="margin:0 0 10px 18px;line-height:1.25;">
-  <li><strong>Tema</strong>: Retro → Neon → Noir (botão “Tema”)</li>
-  <li>Scanlines (CRT) e Alto Contraste já estão sempre ativos no design.</li>
-</ul>
+      <h3 style="margin:10px 0 8px;font-size:18px;">Aparência</h3>
+      <ul style="margin:0 0 10px 18px;line-height:1.25;">
+        <li><strong>Tema</strong>: Retro → Neon → Noir (botão “Tema”)</li>
+        <li>Scanlines (CRT) e Alto Contraste já estão sempre ativos no design.</li>
+      </ul>
+    </section>
 
-      </section>
+    <section>
+      <h3 style="margin:0 0 8px;font-size:18px;">Dicas</h3>
+      <ul style="margin:0 0 10px 18px;line-height:1.25;">
+        <li>Use palavras incompletas na busca: “pac”, “tet”, “inva”…</li>
+        <li>Preferências ficam salvas (tema, favoritos e filtro).</li>
+        <li>Respeita <em>prefers-reduced-motion</em>.</li>
+      </ul>
+    </section>
+  </div>
+</dialog>
 
-      <section>
-        <h3 style="margin:0 0 8px;font-size:18px;">Dicas</h3>
-        <ul style="margin:0 0 10px 18px;line-height:1.25;">
-          <li>Use palavras incompletas na busca: “pac”, “tet”, “inva”…</li>
-          <li>Preferências ficam salvas (tema, CRT, HC).</li>
-          <li>Motion-friendly: respeita <em>prefers-reduced-motion</em>.</li>
-        </ul>
-
-        <div style="margin-top:12px;padding:10px;border:2px dashed color-mix(in oklab, var(--accent) 60%, black 40%);border-radius:12px;">
-          <p style="margin:0;font-size:16px;">Queremos feedback! Em breve: favoritos ⭐, capas 8-bit e filtros por gênero.</p>
-        </div>
-      </section>
-    </div>
-  </dialog>
 
   <!-- Overlay CRT (ligado via JS) -->
   <div id="crtOverlay" aria-hidden="true"></div>
@@ -657,83 +654,76 @@
 </a>
 
 
-      <a class="card"
-         href="jogos/space-invaders.html"
-         <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
-         data-title="space invaders"
-         data-genre="tiro naves arcade"
-         tabindex="0">
-        <div class="cover invaders" role="img" aria-label="Capa 8-bit de Space Invaders com alienígenas"></div>
-<h2>Space Invaders</h2>
-<p>Defenda a Terra dos invasores pixelados.</p>
-      </a>
+      <a class="card" href="jogos/space-invaders.html" data-title="space invaders" data-genre="tiro naves arcade" tabindex="0">
+  <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
+  <div class="cover invaders" role="img" aria-label="Capa 8-bit de Space Invaders com alienígenas">
+    <span class="scanlines" aria-hidden="true"></span>
+  </div>
+  <h2>Space Invaders</h2>
+  <p>Defenda a Terra dos invasores pixelados.</p>
+</a>
 
-      <a class="card"
-         href="jogos/tetris.html"
-         <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
-         data-title="tetris"
-         data-genre="puzzle classico blocos"
-         tabindex="0">
-        <div class="cover tetris" role="img" aria-label="Capa 8-bit de Tetris com blocos multicoloridos"></div>
-<h2>Tetris</h2>
-<p>Empilhe peças, limpe linhas, vença o caos.</p>
-      </a>
 
-      <a class="card"
-         href="jogos/pong.html"
-         <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
-         data-title="pong"
-         data-genre="esporte arcade classico"
-         tabindex="0">
-        <div class="cover pong" role="img" aria-label="Capa 8-bit de Pong com barras e bola"></div>
-<h2>Pong</h2>
-<p>O duelo de raquetes que começou tudo.</p>
-      </a>
+      <a class="card" href="jogos/tetris.html" data-title="tetris" data-genre="puzzle classico blocos" tabindex="0">
+  <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
+  <div class="cover tetris" role="img" aria-label="Capa 8-bit de Tetris com blocos multicoloridos">
+    <span class="scanlines" aria-hidden="true"></span>
+  </div>
+  <h2>Tetris</h2>
+  <p>Empilhe peças, limpe linhas, vença o caos.</p>
+</a>
 
-      <a class="card"
-         href="jogos/arkanoid.html"
-         <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
-         data-title="arkanoid"
-         data-genre="breakout blocos reflexo"
-         tabindex="0">
-        <div class="cover arkanoid" role="img" aria-label="Capa 8-bit de Arkanoid com blocos coloridos"></div>
-<h2>Arkanoid</h2>
-<p>Quebre blocos, pegue power-ups, prossiga.</p>
-      </a>
 
-      <a class="card"
-         href="jogos/asteroids.html"
-         <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
-         data-title="asteroids"
-         data-genre="nave fisica tiro"
-         tabindex="0">
-        <div class="cover asteroids" role="img" aria-label="Capa 8-bit de Asteroids com rochas espaciais"></div>
-<h2>Asteroids</h2>
-<p>Asteroides por todos os lados. Mire e acelere.</p>
-      </a>
+      <a class="card" href="jogos/pong.html" data-title="pong" data-genre="esporte arcade classico" tabindex="0">
+  <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
+  <div class="cover pong" role="img" aria-label="Capa 8-bit de Pong com barras e bola">
+    <span class="scanlines" aria-hidden="true"></span>
+  </div>
+  <h2>Pong</h2>
+  <p>O duelo de raquetes que começou tudo.</p>
+</a>
+
+
+      <a class="card" href="jogos/arkanoid.html" data-title="arkanoid" data-genre="breakout blocos reflexo" tabindex="0">
+  <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
+  <div class="cover arkanoid" role="img" aria-label="Capa 8-bit de Arkanoid com blocos coloridos">
+    <span class="scanlines" aria-hidden="true"></span>
+  </div>
+  <h2>Arkanoid</h2>
+  <p>Quebre blocos, pegue power-ups, prossiga.</p>
+</a>
+
+
+      <a class="card" href="jogos/asteroids.html" data-title="asteroids" data-genre="nave fisica tiro" tabindex="0">
+  <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
+  <div class="cover asteroids" role="img" aria-label="Capa 8-bit de Asteroids com rochas espaciais">
+    <span class="scanlines" aria-hidden="true"></span>
+  </div>
+  <h2>Asteroids</h2>
+  <p>Asteroides por todos os lados. Mire e acelere.</p>
+</a>
+
 
       <!-- Espaço para crescer fácil: copie o bloco abaixo e ajuste os atributos -->
-      <a class="card"
-         href="jogos/galaga.html"
-         <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
-         data-title="galaga"
-         data-genre="tiro nave classico"
-         tabindex="0">
-        <div class="cover invaders" role="img" aria-label="Capa 8-bit estilo naves para Galaga"></div>
-<h2>Galaga</h2>
-<p>Formações inimigas e capturas táticas no espaço.</p>
-      </a>
+      <a class="card" href="jogos/galaga.html" data-title="galaga" data-genre="tiro nave classico" tabindex="0">
+  <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
+  <div class="cover invaders" role="img" aria-label="Capa 8-bit estilo naves para Galaga">
+    <span class="scanlines" aria-hidden="true"></span>
+  </div>
+  <h2>Galaga</h2>
+  <p>Formações inimigas e capturas táticas no espaço.</p>
+</a>
 
-      <a class="card"
-         href="jogos/breakout.html"
-         <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
-         data-title="breakout"
-         data-genre="breakout blocos arcade"
-         tabindex="0">
-        <div class="cover arkanoid" role="img" aria-label="Capa 8-bit estilo blocos para Breakout"></div>
-<h2>Breakout</h2>
-<p>A origem do vício de quebrar blocos.</p>
-      </a>
+
+      <<a class="card" href="jogos/breakout.html" data-title="breakout" data-genre="breakout blocos arcade" tabindex="0">
+  <button class="fav-btn" type="button" aria-pressed="false" aria-label="Adicionar aos favoritos">★</button>
+  <div class="cover arkanoid" role="img" aria-label="Capa 8-bit estilo blocos para Breakout">
+    <span class="scanlines" aria-hidden="true"></span>
+  </div>
+  <h2>Breakout</h2>
+  <p>A origem do vício de quebrar blocos.</p>
+</a>
+
     </section>
   </main>
 
@@ -743,366 +733,307 @@
   </footer>
 
     <script>
-  (()=>{
-    const $  = (sel, el=document) => el.querySelector(sel);
-    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
-    const root = document.documentElement;
+(()=>{
+  const $  = (sel, el=document) => el.querySelector(sel);
+  const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+  const root = document.documentElement;
 
-    // ===== Elementos =====
-    const searchInput = $('#searchInput');
-    const grid        = $('#grid');
-    const cards       = $$('.card');
-    const themeBtn    = $('#themeCycle');
-    const themeLabel  = $('#themeLabel');
-    const footTheme   = $('#footTheme');
-    const helpBtn     = $('#helpBtn');
-    const helpDialog  = $('#helpDialog');
-    const backdrop    = $('#modalBackdrop');
-    const crtOverlay  = $('#crtOverlay'); // sempre ativo via CSS var
+  // ===== elementos =====
+  const searchInput = $('#searchInput');
+  const grid        = $('#grid');
+  const cards       = $$('.card');
+  const themeBtn    = $('#themeCycle');
+  const themeLabel  = $('#themeLabel');
+  const footTheme   = $('#footTheme');
+  const helpBtn     = $('#helpBtn');
+  const helpDialog  = $('#helpDialog');
+  const backdrop    = $('#modalBackdrop');
+  const favFilterBtn= $('#favFilter');
+  const crtOverlay  = $('#crtOverlay'); // CRT sempre ativo via CSS
 
-    // ===== Preferências (localStorage) =====
-const LS = {
-  theme: 'retroplay:theme',
-  q:     'retroplay:q',
-  favs:  'retroplay:favs',       // Set de favoritos (hrefs)
-  favOn: 'retroplay:favFilter'   // filtro “Somente favoritos”
-};
+  // ===== storage keys =====
+  const LS = {
+    theme: 'retroplay:theme',
+    q:     'retroplay:q',
+    favs:  'retroplay:favs',
+    favOn: 'retroplay:favFilter'
+  };
 
-const favButtons = Array.from(document.querySelectorAll('.card .fav-btn'));
-const favFilterBtn = document.getElementById('favFilter');
+  // ===== tema (Retro -> Neon -> Noir) =====
+  const THEMES = ['retro','neon','noir'];
+  const getTheme = () => root.getAttribute('data-theme') || 'retro';
+  const setTheme = (t) => {
+    root.setAttribute('data-theme', t);
+    localStorage.setItem(LS.theme, t);
+    if (themeLabel) themeLabel.textContent = t[0].toUpperCase()+t.slice(1);
+    if (footTheme)  footTheme.textContent  = `Tema: ${themeLabel?.textContent || t}`;
+    if (themeBtn)   themeBtn.setAttribute('aria-pressed', String(t !== 'retro'));
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      const map = { retro:'#0f380f', neon:'#0b1020', noir:'#0b0b0c' };
+      metaTheme.setAttribute('content', map[t] || '#0f380f');
+    }
+  };
+  const savedTheme = localStorage.getItem(LS.theme);
+  setTheme(THEMES.includes(savedTheme) ? savedTheme : getTheme());
+  themeBtn?.addEventListener('click', ()=>{
+    const idx = THEMES.indexOf(getTheme());
+    const next = THEMES[(idx+1)%THEMES.length];
+    setTheme(next);
+  });
 
+  // ===== CRT/HC fixos no design (garantia) =====
+  root.style.setProperty('--crt-opacity', '0.25');
+  root.style.setProperty('--shadow-offset', '14px');
 
-    // ===== Tema (Retro -> Neon -> Noir) =====
-    const THEMES = ['retro','neon','noir'];
-    const getTheme = () => root.getAttribute('data-theme') || 'retro';
-    const setTheme = (t) => {
-      root.setAttribute('data-theme', t);
-      localStorage.setItem(LS.theme, t);
-      themeLabel.textContent = t[0].toUpperCase() + t.slice(1);
-      if (footTheme) footTheme.textContent = `Tema: ${themeLabel.textContent}`;
-      themeBtn.setAttribute('aria-pressed', String(t !== 'retro'));
-      const metaTheme = document.querySelector('meta[name="theme-color"]');
-      if (metaTheme) {
-        const map = { retro:'#0f380f', neon:'#0b1020', noir:'#0b0b0c' };
-        metaTheme.setAttribute('content', map[t] || '#0f380f');
-      }
-    };
-    const savedTheme = localStorage.getItem(LS.theme);
-    setTheme(THEMES.includes(savedTheme) ? savedTheme : getTheme());
+  // ===== Favoritos =====
+  function loadFavs(){
+    try { return new Set(JSON.parse(localStorage.getItem(LS.favs) || '[]')); }
+    catch { return new Set(); }
+  }
+  function saveFavs(set){
+    localStorage.setItem(LS.favs, JSON.stringify(Array.from(set)));
+  }
+  let FAVS = loadFavs();
 
-    themeBtn.addEventListener('click', ()=>{
-      const idx = THEMES.indexOf(getTheme());
-      const next = THEMES[(idx+1)%THEMES.length];
-      setTheme(next);
-      wink();
+  function applyFavState(card, isFav){
+    card.dataset.fav = isFav ? '1' : '0';
+    const btn = card.querySelector('.fav-btn');
+    if (btn) btn.setAttribute('aria-pressed', String(!!isFav));
+  }
+
+  function initFavs(){
+    cards.forEach(card=>{
+      const key = card.getAttribute('href') || card.dataset.id || '';
+      applyFavState(card, FAVS.has(key));
     });
+  }
 
+  // botões de estrela (dentro dos cards)
+  $$('.card .fav-btn').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      const card = btn.closest('.card'); if (!card) return;
 
-    // ===== Favoritos =====
-function loadFavs(){
-  try{ return new Set(JSON.parse(localStorage.getItem(LS.favs) || '[]')); }
-  catch{ return new Set(); }
-}
-function saveFavs(set){
-  localStorage.setItem(LS.favs, JSON.stringify(Array.from(set)));
-}
-let FAVS = loadFavs();
+      // chave estável (href se existir, senão data-id)
+      const key = card.getAttribute('href') || card.dataset.id || '';
 
-// marca visual de um card conforme favorito
-function applyFavState(card, isFav){
-  card.dataset.fav = isFav ? '1' : '0';
-  const btn = card.querySelector('.fav-btn');
-  if (btn) btn.setAttribute('aria-pressed', String(!!isFav));
-}
+      // alterna estado
+      const nowFav = card.dataset.fav !== '1';
+      card.dataset.fav = nowFav ? '1' : '0';
+      btn.setAttribute('aria-pressed', String(nowFav));
 
-// inicializa estado visual dos favoritos
-function initFavs(){
-  document.querySelectorAll('.card').forEach(card=>{
-    const href = card.getAttribute('href') || card.dataset.id || '';
-    const isFav = FAVS.has(href);
-    applyFavState(card, isFav);
-  });
-}
+      // persistência
+      if (nowFav) FAVS.add(key); else FAVS.delete(key);
+      saveFavs(FAVS);
 
-// click na estrela: evita navegar e alterna favorito
-favButtons.forEach(btn=>{
-  btn.addEventListener('click', (e)=>{
-    e.preventDefault(); e.stopPropagation();
-    const card = btn.closest('.card'); if (!card) return;
-    const key = card.getAttribute('href') || card.dataset.id || '';
-    const nowFav = !FAVS.has(key);
-    if (nowFav) FAVS.add(key); else FAVS.delete(key);
-    saveFavs(FAVS);
-    applyFavState(card, nowFav);
-    // se estiver filtrando só favoritos, re-aplica filtro para esconder/mostrar
-    if (favFilterBtn?.getAttribute('aria-pressed') === 'true') applyFavFilter(true);
-  });
-});
-
-
-    // ===== CRT/HC fixos por design (garantia) =====
-    root.style.setProperty('--crt-opacity', '0.25');
-    root.style.setProperty('--shadow-offset', '14px');
-
-    // ===== Busca =====
-       const norm = (s) => s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
-
-    const filterCards = (query) => {
-      const q = norm(query.trim());
-      let firstVisible = null;
-
-      cards.forEach(card => {
-        const title  = (card.dataset.title || card.textContent || '');
-        const genres = (card.dataset.genre  || '');
-        const hay = norm(title + ' ' + genres);
-        const match = !q || hay.includes(q);
-        card.style.display = match ? '' : 'none';
-        if (match && !firstVisible) firstVisible = card;
-      });
-
-      if (q && firstVisible) {
-        grid.dataset.firstVisible = cards.indexOf(firstVisible);
-      } else {
-        delete grid.dataset.firstVisible;
-      }
-
-          // filtra cards baseado no Set FAVS e compõe com a busca atual
-    function applyFavFilter(on){
-      // marca visual do botão e persiste
-      favFilterBtn?.setAttribute('aria-pressed', String(!!on));
-      localStorage.setItem(LS.favOn, on ? '1' : '0');
-
-      // busca atual (se houver) — compõe com favoritos
-      const q = (searchInput?.value || '').trim().toLowerCase();
-      const normalizedQ = q.normalize('NFD').replace(/\p{Diacritic}/gu, '');
-
-      // aplica regra de exibição
-      cards.forEach(card=>{
-        const href  = card.getAttribute('href') || card.dataset.id || '';
-        const isFav = FAVS.has(href);
-
-        let show = on ? isFav : true; // filtro de favoritos
-        if (show && q){               // compor com busca
-          const title  = (card.dataset.title || card.textContent || '');
-          const genres = (card.dataset.genre  || '');
-          const hay = (title + ' ' + genres)
-            .toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
-          show = hay.includes(normalizedQ);
-        }
-        card.style.display = show ? '' : 'none';
-      });
-
-      // mantém o "primeiro visível" para Enter na busca
-      const firstVisible = cards.find(c => c.offsetParent !== null);
-      if (firstVisible){
-        grid.dataset.firstVisible = cards.indexOf(firstVisible);
-      } else {
-        delete grid.dataset.firstVisible;
-      }
-
-      ensureNoResults();
-    }
-
-    // ---------- estado inicial do filtro + listener ----------
-    // (requer que favFilterBtn, FAVS, LS, cards, grid, searchInput já existam)
-    const favFilterOn = localStorage.getItem(LS.favOn) === '1';
-    if (favFilterBtn){
-      applyFavFilter(favFilterOn);
-      favFilterBtn.addEventListener('click', ()=>{
-        const now = favFilterBtn.getAttribute('aria-pressed') !== 'true';
-        applyFavFilter(now);
-      });
-    }
-
-
-      // se o filtro de favoritos está ligado, re-aplica para compor com a busca
+      // se o filtro Só favoritos está ativo, re-aplica; senão atualiza aviso
       if (favFilterBtn?.getAttribute('aria-pressed') === 'true') {
         applyFavFilter(true);
       } else {
         ensureNoResults();
       }
-    };
-
-
-    const savedQ = localStorage.getItem(LS.q) || '';
-    if (savedQ) { searchInput.value = savedQ; filterCards(savedQ); }
-
-    let t;
-    searchInput.addEventListener('input', ()=>{
-      clearTimeout(t);
-      const val = searchInput.value;
-      t = setTimeout(()=>{
-        localStorage.setItem(LS.q, val);
-        filterCards(val);
-      }, 80);
     });
+  });
 
-    searchInput.addEventListener('keydown', (e)=>{
-      if (e.key === 'Enter') {
-        const idxStr = grid.dataset.firstVisible;
-        if (idxStr !== undefined) {
-          const el = cards[parseInt(idxStr,10)];
-          if (el && el.offsetParent !== null) el.focus();
-        }
-      }
-      if ((e.key === '?' || (e.key === '/' && e.shiftKey)) && !e.ctrlKey && !e.altKey) {
-        e.preventDefault(); openHelp();
-      }
-    });
+  // ===== Busca =====
+  const norm = (s) => s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
 
-    // filtra cards baseado no set FAVS
-function applyFavFilter(on){
-  favFilterBtn?.setAttribute('aria-pressed', String(!!on));
-  localStorage.setItem(LS.favOn, on ? '1' : '0');
+  const filterCards = (query) => {
+    const q = norm((query || '').trim());
+    let firstVisible = null;
 
-  // Se também há busca ativa, respeita ambos
-  const q = (searchInput?.value || '').trim().toLowerCase();
-  const normalizedQ = q.normalize('NFD').replace(/\p{Diacritic}/gu, '');
-
-  document.querySelectorAll('.card').forEach(card=>{
-    const href = card.getAttribute('href') || card.dataset.id || '';
-    const isFav = FAVS.has(href);
-
-    // regra do filtro de favoritos
-    let show = on ? isFav : true;
-
-    // compõe com a busca
-    if (show && q){
+    cards.forEach(card => {
       const title  = (card.dataset.title || card.textContent || '');
       const genres = (card.dataset.genre  || '');
-      const hay = (title + ' ' + genres).toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
-      show = hay.includes(normalizedQ);
-    }
-
-    card.style.display = show ? '' : 'none';
-  });
-
-  // atualiza índice do primeiro visível (para Enter na busca)
-  const firstVisible = Array.from(document.querySelectorAll('.card')).find(c => c.offsetParent !== null);
-  if (firstVisible){
-    const all = Array.from(document.querySelectorAll('.card'));
-    grid.dataset.firstVisible = String(all.indexOf(firstVisible));
-  } else {
-    delete grid.dataset.firstVisible;
-  }
-  ensureNoResults();
-}
-
-// estado inicial do filtro
-const favFilterOn = localStorage.getItem(LS.favOn) === '1';
-if (favFilterBtn){
-  applyFavFilter(favFilterOn);
-  favFilterBtn.addEventListener('click', ()=>{
-    const now = favFilterBtn.getAttribute('aria-pressed') !== 'true';
-    applyFavFilter(now);
-  });
-}
-
-
-    // ===== Navegação por teclado =====
-    grid.addEventListener('keydown', (e)=>{
-      const keys = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D'];
-      if (!keys.includes(e.key)) return;
-
-      const visible = cards.filter(c => c.offsetParent !== null);
-      const cols = computeColumns(visible);
-      const current = visible.indexOf(document.activeElement);
-      if (current === -1) return;
-
-      e.preventDefault();
-      let next = current;
-      switch (e.key) {
-        case 'ArrowLeft': case 'a': case 'A': next = Math.max(0, current - 1); break;
-        case 'ArrowRight': case 'd': case 'D': next = Math.min(visible.length - 1, current + 1); break;
-        case 'ArrowUp': case 'w': case 'W': next = Math.max(0, current - cols); break;
-        case 'ArrowDown': case 's': case 'S': next = Math.min(visible.length - 1, current + cols); break;
-      }
-      visible[next]?.focus();
+      const hay = norm(title + ' ' + genres);
+      const match = !q || hay.includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match && !firstVisible) firstVisible = card;
     });
 
-    function computeColumns(visible) {
-      if (visible.length < 2) return 1;
-      const y0 = visible[0].getBoundingClientRect().top;
-      let c = 1;
-      for (let i = 1; i < visible.length; i++) {
-        if (Math.abs(visible[i].getBoundingClientRect().top - y0) < 5) c++;
-        else break;
-      }
-      return c;
+    if (q && firstVisible) {
+      grid.dataset.firstVisible = cards.indexOf(firstVisible);
+    } else {
+      delete grid.dataset.firstVisible;
     }
 
-    // ===== Modal de Ajuda =====
-    let lastActive = null;
-    function trapFocus(e) {
-      if (helpDialog.open !== true || e.key !== 'Tab') return;
-      const focusables = $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', helpDialog)
-        .filter(el => !el.hasAttribute('disabled') && el.offsetParent !== null);
-      if (focusables.length === 0) return;
-      const first = focusables[0], last = focusables[focusables.length - 1];
-      if (e.shiftKey) { if (document.activeElement === first) { last.focus(); e.preventDefault(); } }
-      else { if (document.activeElement === last) { first.focus(); e.preventDefault(); } }
+    // compor com filtro de favoritos se estiver ligado
+    if (favFilterBtn?.getAttribute('aria-pressed') === 'true') {
+      applyFavFilter(true);
+    } else {
+      ensureNoResults();
     }
-    function openHelp() {
-      if (helpDialog.open) return;
-      lastActive = document.activeElement;
-      backdrop.hidden = false;
-      if (typeof helpDialog.showModal === 'function') helpDialog.showModal();
-      else { helpDialog.setAttribute('open',''); helpDialog.style.display='block'; }
-      helpBtn.setAttribute('aria-expanded','true');
-      ($('#closeHelp', helpDialog) || helpDialog).focus();
-      document.addEventListener('keydown', trapFocus);
-    }
-    function closeHelp() {
-      if (!helpDialog.open) return;
-      if (typeof helpDialog.close === 'function') helpDialog.close();
-      else { helpDialog.removeAttribute('open'); helpDialog.style.display='none'; }
-      backdrop.hidden = true;
-      helpBtn.setAttribute('aria-expanded','false');
-      document.removeEventListener('keydown', trapFocus);
-      if (lastActive && document.body.contains(lastActive)) lastActive.focus();
-    }
-    helpBtn.addEventListener('click', openHelp);
-    $('#closeHelp', helpDialog)?.addEventListener('click', (e)=>{ e.preventDefault(); closeHelp(); });
-    backdrop.addEventListener('click', closeHelp);
-    document.addEventListener('keydown', (e)=>{
-      if (e.key === 'Escape' && helpDialog.open) { e.preventDefault(); closeHelp(); }
-      const tag = (e.target?.tagName || '').toLowerCase();
-      const inField = ['input','textarea','select'].includes(tag) || e.target?.isContentEditable;
-      if (!inField && (e.key === '?' || (e.key === '/' && e.shiftKey)) && !e.ctrlKey && !e.altKey) {
-        e.preventDefault(); openHelp();
+  };
+
+  // restaura última busca
+  const savedQ = localStorage.getItem(LS.q) || '';
+  if (savedQ) { if (searchInput) searchInput.value = savedQ; filterCards(savedQ); }
+
+  let t;
+  searchInput?.addEventListener('input', ()=>{
+    clearTimeout(t);
+    const val = searchInput.value;
+    t = setTimeout(()=>{
+      localStorage.setItem(LS.q, val);
+      filterCards(val);
+    }, 80);
+  });
+
+  searchInput?.addEventListener('keydown', (e)=>{
+    if (e.key === 'Enter') {
+      const idxStr = grid.dataset.firstVisible;
+      if (idxStr !== undefined) {
+        const el = cards[parseInt(idxStr,10)];
+        if (el && el.offsetParent !== null) el.focus();
       }
+    }
+    if ((e.key === '?' || (e.key === '/' && e.shiftKey)) && !e.ctrlKey && !e.altKey) {
+      e.preventDefault(); openHelp();
+    }
+  });
+
+  // ===== Filtro "Somente favoritos" =====
+  function applyFavFilter(on){
+    favFilterBtn?.setAttribute('aria-pressed', String(!!on));
+    localStorage.setItem(LS.favOn, on ? '1' : '0');
+
+    // termo de busca atual (se houver)
+    const q  = (searchInput?.value || '').trim().toLowerCase();
+    const qn = q.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+
+    cards.forEach(card=>{
+      // regra Só favoritos usando o DOM
+      let show = on ? (card.dataset.fav === '1') : true;
+
+      // compõe com busca
+      if (show && q){
+        const hay = (card.dataset.title + ' ' + (card.dataset.genre||'') + ' ' + card.textContent)
+          .toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+        show = hay.includes(qn);
+      }
+
+      card.style.display = show ? '' : 'none';
     });
 
-    // ===== Micro-efeitos =====
-    const mediaReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    function wink(){
-      if (mediaReduce.matches) return;
-      const logo = $('.logo'); if (!logo) return;
-      logo.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}], {duration:300, easing:'ease-out'});
-    }
+    // atualiza “primeiro visível” p/ Enter na busca
+    const firstVisible = cards.find(c => c.offsetParent !== null);
+    if (firstVisible) grid.dataset.firstVisible = cards.indexOf(firstVisible);
+    else delete grid.dataset.firstVisible;
 
-    // Aviso “sem resultados”
-    const noResId = 'no-results-msg';
-    function ensureNoResults(){
-      const hasVisible = cards.some(c => c.offsetParent !== null);
-      let msg = $('#'+noResId);
-      if (!hasVisible) {
-        if (!msg) {
-          msg = document.createElement('div');
-          msg.id = noResId; msg.role = 'status';
-          msg.style.margin = '12px auto'; msg.style.width = 'fit-content';
-          msg.style.padding = '10px 14px'; msg.style.border = '2px dashed';
-          msg.style.borderColor = 'color-mix(in oklab, var(--accent) 60%, black 40%)';
-          msg.style.borderRadius = '12px'; msg.style.boxShadow = '6px 6px 0 var(--shadow-color)';
-          msg.textContent = 'Nenhum jogo encontrado. Tente outra palavra.';
-          grid.after(msg);
-        }
-      } else if (msg) { msg.remove(); }
-    }
-    const obs = new MutationObserver(ensureNoResults);
-    cards.forEach(c => obs.observe(c, {attributes:true, attributeFilter:['style']}));
     ensureNoResults();
-  })();
+  }
+
+  // estado inicial do filtro + listener
+  const favFilterOn = localStorage.getItem(LS.favOn) === '1';
+  if (favFilterBtn){
+    applyFavFilter(favFilterOn);
+    favFilterBtn.addEventListener('click', ()=>{
+      const now = favFilterBtn.getAttribute('aria-pressed') !== 'true';
+      applyFavFilter(now);
+    });
+  }
+
+  // ===== Navegação por teclado no grid =====
+  grid?.addEventListener('keydown', (e)=>{
+    const keys = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D'];
+    if (!keys.includes(e.key)) return;
+
+    const visible = cards.filter(c => c.offsetParent !== null);
+    const cols = computeColumns(visible);
+    const current = visible.indexOf(document.activeElement);
+    if (current === -1) return;
+
+    e.preventDefault();
+    let next = current;
+    switch (e.key) {
+      case 'ArrowLeft': case 'a': case 'A': next = Math.max(0, current - 1); break;
+      case 'ArrowRight': case 'd': case 'D': next = Math.min(visible.length - 1, current + 1); break;
+      case 'ArrowUp': case 'w': case 'W': next = Math.max(0, current - cols); break;
+      case 'ArrowDown': case 's': case 'S': next = Math.min(visible.length - 1, current + cols); break;
+    }
+    visible[next]?.focus();
+  });
+  function computeColumns(visible){
+    if (visible.length < 2) return 1;
+    const y0 = visible[0].getBoundingClientRect().top;
+    let c = 1;
+    for (let i=1;i<visible.length;i++){
+      if (Math.abs(visible[i].getBoundingClientRect().top - y0) < 5) c++; else break;
+    }
+    return c;
+  }
+
+  // ===== Ajuda (dialog) =====
+  let lastActive = null;
+  function trapFocus(e){
+    if (helpDialog?.open !== true || e.key !== 'Tab') return;
+    const f = $$('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])', helpDialog)
+      .filter(el => !el.hasAttribute('disabled') && el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length-1];
+    if (e.shiftKey) { if (document.activeElement === first){ last.focus(); e.preventDefault(); } }
+    else { if (document.activeElement === last){ first.focus(); e.preventDefault(); } }
+  }
+  function openHelp(){
+    if (helpDialog?.open) return;
+    lastActive = document.activeElement;
+    if (backdrop) backdrop.hidden = false;
+    if (helpDialog && typeof helpDialog.showModal === 'function') helpDialog.showModal();
+    else if (helpDialog) { helpDialog.setAttribute('open',''); helpDialog.style.display='block'; }
+    helpBtn?.setAttribute('aria-expanded','true');
+    ($('#closeHelp', helpDialog) || helpDialog)?.focus?.();
+    document.addEventListener('keydown', trapFocus);
+  }
+  function closeHelp(){
+    if (!helpDialog?.open) return;
+    if (typeof helpDialog.close === 'function') helpDialog.close();
+    else { helpDialog.removeAttribute('open'); helpDialog.style.display='none'; }
+    if (backdrop) backdrop.hidden = true;
+    helpBtn?.setAttribute('aria-expanded','false');
+    document.removeEventListener('keydown', trapFocus);
+    if (lastActive && document.body.contains(lastActive)) lastActive.focus();
+  }
+  helpBtn?.addEventListener('click', openHelp);
+  $('#closeHelp', helpDialog)?.addEventListener('click', (e)=>{ e.preventDefault(); closeHelp(); });
+  backdrop?.addEventListener('click', closeHelp);
+  document.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape' && helpDialog?.open) { e.preventDefault(); closeHelp(); }
+    const tag = (e.target?.tagName || '').toLowerCase();
+    const inField = ['input','textarea','select'].includes(tag) || e.target?.isContentEditable;
+    if (!inField && (e.key === '?' || (e.key === '/' && e.shiftKey)) && !e.ctrlKey && !e.altKey) {
+      e.preventDefault(); openHelp();
+    }
+  });
+
+  // ===== aviso “sem resultados” =====
+  const noResId = 'no-results-msg';
+  function ensureNoResults(){
+    const hasVisible = cards.some(c => c.offsetParent !== null);
+    let msg = $('#'+noResId);
+    if (!hasVisible) {
+      if (!msg) {
+        msg = document.createElement('div');
+        msg.id = noResId; msg.role = 'status';
+        msg.style.margin = '12px auto';
+        msg.style.width = 'fit-content';
+        msg.style.padding = '10px 14px';
+        msg.style.border = '2px dashed';
+        msg.style.borderColor = 'color-mix(in oklab, var(--accent) 60%, black 40%)';
+        msg.style.borderRadius = '12px';
+        msg.style.boxShadow = '6px 6px 0 var(--shadow-color)';
+        msg.textContent = 'Nenhum jogo encontrado. Tente outra palavra.';
+        grid.after(msg);
+      }
+    } else if (msg) { msg.remove(); }
+  }
+  const obs = new MutationObserver(ensureNoResults);
+  cards.forEach(c => obs.observe(c, {attributes:true, attributeFilter:['style']}));
+  ensureNoResults();
+
+  // inicializa favoritos no visual (depois do ensure)
+  initFavs();
+})();
 </script>
 
 
